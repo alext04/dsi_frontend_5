@@ -1,11 +1,10 @@
-// src/layouts/RootLayout.jsx
 import { Outlet, Link, useLocation } from "react-router-dom";
 
 function RootLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <nav className="bg-[#A393EB] shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
@@ -76,7 +75,7 @@ function RootLayout() {
               </Link>
               <Link
                 to="/signup"
-                className={`px-4 py-2 rounded-full bg-white text-[#A393EB] hover:bg-gray-100 text-sm font-medium transition-all duration-200`}
+                className="px-4 py-2 rounded-full bg-white text-[#A393EB] hover:bg-gray-100 text-sm font-medium transition-all duration-200"
               >
                 Sign Up
               </Link>
@@ -84,7 +83,7 @@ function RootLayout() {
           </div>
         </div>
       </nav>
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 flex">
         <Outlet />
       </main>
     </div>
