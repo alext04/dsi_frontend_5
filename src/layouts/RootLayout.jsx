@@ -17,7 +17,7 @@ function RootLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Top Bar */}
-      <header className="bg-white shadow-lg px-4 py-3 flex items-center justify-between">
+      <header className="bg-white shadow-lg px-4 py-3 flex items-center justify-between z-50">
         {/* Left: Dropdown Button */}
         <div className="relative">
           <button
