@@ -1,42 +1,45 @@
 import React from "react";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { Line } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
+import { Chart } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement);
 
 function Analytics() {
-  // Hardcoded data for ridgeline plot-like visualization (converted into line chart)
+  // Hardcoded data for ridgeline plot-like visualization
   const skills = ["Communication", "Confidence", "Leadership", "Self-Discipline", "Empathy", "Time Management"];
   const skillScores = {
-    Communication: [3.5, 4.0, 3.2, 3.8, 4.1],
-    Confidence: [3.8, 3.7, 4.2, 3.9, 4.0],
-    Leadership: [3.9, 4.3, 4.0, 3.8, 3.7],
-    "Self-Discipline": [4.2, 3.9, 4.0, 4.1, 4.3],
-    Empathy: [3.5, 3.6, 3.8, 3.9, 4.1],
-    "Time Management": [3.7, 3.8, 3.9, 3.5, 4.0],
+    Communication: [2, 3, 3, 4, 4, 4, 5, 5, 5, 5],
+    Confidence: [1, 2, 3, 3, 4, 4, 4, 5, 5, 5],
+    Leadership: [2, 2, 3, 3, 3, 4, 4, 4, 5, 5],
+    "Self-Discipline": [1, 2, 2, 3, 3, 4, 4, 4, 5, 5],
+    Empathy: [3, 3, 3, 4, 4, 4, 4, 5, 5, 5],
+    "Time Management": [1, 2, 2, 3, 3, 3, 4, 4, 5, 5],
   };
 
   // Hardcoded data for bar chart (Class performance over time)
   const classDates = ["10 Sep", "20 Sep", "30 Sep", "10 Oct"];
   const classPerformance = [3.2, 3.8, 4.0, 3.6];
 
-  // Data for Line Chart (Ridgeline-like plot)
+  // Data for Ridgeline-like plot
   const ridgelineData = {
-    labels: ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"],
-    datasets: Object.keys(skillScores).map((skill, index) => ({
+    labels: [1, 2, 3, 4, 5],
+    datasets: skills.map((skill, index) => ({
       label: skill,
-      data: skillScores[skill],
+      data: Array(5)
+        .fill(0)
+        .map((_, i) => skillScores[skill].filter((score) => score === i + 1).length),
+      backgroundColor: `hsla(${index * 60}, 70%, 60%, 0.6)`,
       borderColor: `hsl(${index * 60}, 70%, 60%)`,
-      backgroundColor: `hsl(${index * 60}, 70%, 80%)`,
-      fill: false,
-      tension: 0.4,
+      borderWidth: 1,
+      fill: true,
     })),
   };
 
   const ridgelineOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    indexAxis: "y",
     plugins: {
       legend: {
         position: "top",
@@ -44,22 +47,22 @@ function Analytics() {
       title: {
         display: true,
         text: "Skill Distribution Overview",
-        font: { size: 16 },
+        font: { size: 20 },
       },
     },
     scales: {
-      y: {
+      x: {
         beginAtZero: true,
-        max: 5,
+        max: 10,
         title: {
           display: true,
-          text: "Scores",
+          text: "Number of Students",
         },
       },
-      x: {
+      y: {
         title: {
           display: true,
-          text: "Tests",
+          text: "Skills",
         },
       },
     },
@@ -79,6 +82,7 @@ function Analytics() {
 
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -86,7 +90,7 @@ function Analytics() {
       title: {
         display: true,
         text: "Class Performance Over Time",
-        font: { size: 16 },
+        font: { size: 20 },
       },
     },
     scales: {
@@ -109,22 +113,19 @@ function Analytics() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      {/* Page Title */}
-      <h1 className="text-2xl font-bold text-purple-800 mb-6 text-center">Analytics Dashboard</h1>
+      <h1 className="text-3xl font-bold text-purple-800 mb-6 text-center">Analytics Dashboard</h1>
 
-      {/* Ridgeline Plot (Skill Distribution Overview) */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold text-purple-800 mb-4">Previous Activities Overview</h2>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <Line data={ridgelineData} options={ridgelineOptions} />
+        <h2 className="text-2xl font-bold text-purple-800 mb-4">Skill Distribution Overview</h2>
+        <div className="bg-white p-6 rounded-lg shadow" style={{ height: "400px" }}>
+          <Chart type="bar" data={ridgelineData} options={ridgelineOptions} height={400} />
         </div>
       </section>
 
-      {/* Class Performance Bar Chart */}
       <section className="mb-8">
-        <h2 className="text-xl font-bold text-purple-800 mb-4">Student Progress</h2>
-        <div className="bg-white p-4 rounded-lg shadow">
-          <Bar data={barData} options={barOptions} />
+        <h2 className="text-2xl font-bold text-purple-800 mb-4">Student Progress</h2>
+        <div className="bg-white p-6 rounded-lg shadow" style={{ height: "400px" }}>
+          <Bar data={barData} options={barOptions} height={400} />
         </div>
         <div className="flex justify-center mt-4">
           <button className="bg-pink-500 text-white px-6 py-2 rounded hover:bg-pink-600">
