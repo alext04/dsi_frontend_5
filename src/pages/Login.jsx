@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { requestOTP, verifyOTP } from '../services/login';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,23 +20,32 @@ export default function LoginPage() {
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Add your OTP sending logic here
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const otpDTO = await requestOTP(email);
+      console.log('OTP requested:', otpDTO);
       setShowOTP(true);
-    }, 1000);
+    } catch (error) {
+      console.error('Failed to request OTP:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     const otpString = otp.join('');
-    console.log('Verifying OTP:', otpString);
-    // Add your OTP verification logic here
-    setTimeout(() => {
+    try{
+      const verifyDTO = await verifyOTP(email, otpString);
+      console.log('OTP verified:', verifyDTO);
+      if(verifyDTO.status === 200){
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Failed to verify OTP:', error);
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard'); // Navigate to dashboard after successful verification
-    }, 1000);
+    }
   };
 
   const handleOtpChange = (index, value) => {
