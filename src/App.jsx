@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
+import LessonPlans from "./pages/Lesson";
 
 
 const router = createBrowserRouter([
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: "analytics",
         element: <Analytics />,
+      },
+      {
+        path: "lessons",
+        element: <LessonPlans />,
       },
     ],
   },

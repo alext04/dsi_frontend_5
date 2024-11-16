@@ -37,6 +37,13 @@ function RootLayout() {
                 Dashboard
               </Link>
               <Link
+                to="/lessons"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Lessons
+              </Link>
+              <Link
                 to="/chat"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 onClick={() => setIsDropdownOpen(false)}
@@ -104,7 +111,31 @@ function RootLayout() {
               </svg>
               <span>Dashboard</span>
             </Link>
-
+            {/* lessons Link */}
+            <Link
+              to="/lessons"
+              className={`flex flex-col items-center text-sm font-medium transition-all duration-200 ${
+                location.pathname === "/lessons"
+                  ? "text-white"
+                  : "text-gray-300 hover:text-white"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.707 9.707 0 01-4-.812l-4.243 1.061a1 1 0 01-1.235-1.235l1.06-4.243A9.707 9.707 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <span>lessons</span>
+            </Link>
             {/* Chat Link */}
             <Link
               to="/chat"
@@ -130,7 +161,6 @@ function RootLayout() {
               </svg>
               <span>Chat</span>
             </Link>
-
 
             <Link
               to="/analytics"
