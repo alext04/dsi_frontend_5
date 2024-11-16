@@ -1,14 +1,19 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   return (
     <div className="max-w-4xl mx-auto p-4">
       {/* Welcome Section */}
       <div className="bg-purple-100 p-6 rounded-lg shadow mb-8">
-        <h1 className="text-2xl font-bold text-purple-800 mb-4">Welcome to <span className="text-pink-600">tafea!</span></h1>
-        <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
-          View your Analytics Dashboard
-        </button>
+        <h1 className="text-2xl font-bold text-purple-800 mb-4">
+          Welcome to <span className="text-pink-600">tafea!</span>
+        </h1>
+        <Link to="/analytics">
+          <button className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
+            View your Analytics Dashboard
+          </button>
+        </Link>
       </div>
 
       {/* Upcoming Activities Section */}

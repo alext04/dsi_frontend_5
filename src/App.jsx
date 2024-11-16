@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import Chat from './pages/Chat';
 import Dashboard from "./pages/Dashboard";
+import Analytics from "./pages/Analytics";
 
 
 const router = createBrowserRouter([
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "chat",
         element: <Chat />,
+      },
+      {
+        path: "analytics",
+        element: <Analytics />,
       },
     ],
   },
