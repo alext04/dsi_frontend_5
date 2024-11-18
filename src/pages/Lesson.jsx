@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; 
+
 
 const AddLessonForm = ({ onClose, onAddLesson }) => {
   const [formData, setFormData] = useState({
@@ -241,7 +243,6 @@ const ActivityDetails = ({ lesson, onClose }) => {
     </div>
   );
 };
-
 const LessonPlans = () => {
   const [activeTab, setActiveTab] = useState("planned");
   const [selectedActivity, setSelectedActivity] = useState(null);
@@ -287,8 +288,14 @@ const LessonPlans = () => {
     },
   ];
 
+  const navigate = useNavigate();
+
   const handleAddLesson = (newLesson) => {
     setLessons([...lessons, newLesson]);
+  };
+
+  const handleStartLesson = (lesson) => {
+    navigate("/chat", { state: { lesson } });
   };
 
   return (
@@ -345,7 +352,10 @@ const LessonPlans = () => {
                       </h3>
                       <p className="text-gray-700 text-sm">{lesson.topics}</p>
                     </div>
-                    <button className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md">
+                    <button
+                      onClick={() => handleStartLesson(lesson)}
+                      className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md"
+                    >
                       Start Now →
                     </button>
                   </div>
@@ -367,7 +377,7 @@ const LessonPlans = () => {
                     </h3>
                     <p className="text-gray-700 text-sm">{lesson.topics}</p>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setSelectedActivity(lesson)}
                     className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md"
                   >
@@ -381,9 +391,9 @@ const LessonPlans = () => {
 
         {/* Activity Details Modal */}
         {selectedActivity && (
-          <ActivityDetails 
-            lesson={selectedActivity} 
-            onClose={() => setSelectedActivity(null)} 
+          <ActivityDetails
+            lesson={selectedActivity}
+            onClose={() => setSelectedActivity(null)}
           />
         )}
 
