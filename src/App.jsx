@@ -14,7 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import LessonPlans from "./pages/Lesson";
 import ClassPage from "./pages/Class";
-
+import ClassProgressReport from "./pages/Feedback";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: "addclass",
         element: <ClassPage />,
+      },
+      {
+        path: "Feedback",
+        element: <ClassProgressReport />,
       },
     ],
   },

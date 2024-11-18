@@ -85,7 +85,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Additional activity placeholders */}
-                <div className="bg-gray-100 p-6 rounded-xl border-2 border-dashed border-gray-300">
+                {/* <div className="bg-gray-100 p-6 rounded-xl border-2 border-dashed border-gray-300">
                   <p className="text-gray-500 text-center">
                     Future activities will appear here
                   </p>
@@ -94,7 +94,7 @@ const Dashboard = () => {
                   <p className="text-gray-500 text-center">
                     Future activities will appear here
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
