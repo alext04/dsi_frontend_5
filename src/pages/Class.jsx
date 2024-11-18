@@ -1,25 +1,17 @@
 import React, { useState } from "react";
+import { createClass } from "../services/class";
 
 const ClassPage = () => {
   const [standardName, setStandardName] = useState("");
-  const [currentStandard, setCurrentStandard] = useState("");
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [students, setStudents] = useState([]);
 
-  const handleSaveStandard = () => {
-    if (standardName.trim() !== "") {
-      setCurrentStandard(standardName.trim());
-      setStandardName("");
-    }
-  };
-
   const handleAddStudent = () => {
-    if (name.trim() !== "" && id.trim() !== "" && currentStandard !== "") {
+    if (name.trim() !== "" && id.trim() !== "" && standardName !== "") {
       const newStudent = {
         name: name.trim(),
         id: id.trim(),
-        standard: currentStandard,
       };
       setStudents([...students, newStudent]);
       setName("");
@@ -30,7 +22,26 @@ const ClassPage = () => {
   };
 
   const handleSubmit = () => {
+    const asyncCreateClass = async () => {
+      try {
+        const response = await createClass(standardName, 
+              students.map((student) => ({ name: student.name, roll_no: student.id })),
+              localStorage.getItem("token")
+            );
+        console.log("Class created:", response);
+        if (response.status === 200) {
+          alert("Class created successfully.");
+          setStandardName("");
+          setName("");
+          setId("");
+          setStudents([]);
+        }
+      } catch (error) {
+        console.error("Failed to create class:", error);
+      }
+    }
     if (students.length > 0) {
+      asyncCreateClass();
       const csvContent =
         "data:text/csv;charset=utf-8," +
         "Name,ID,Class Standard\n" +
@@ -71,12 +82,6 @@ const ClassPage = () => {
                 placeholder="Enter class standard"
                 className="border rounded py-2 px-4 flex-1"
               />
-              <button
-                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded"
-                onClick={handleSaveStandard}
-              >
-                Save
-              </button>
             </div>
           </div>
         </div>
@@ -155,7 +160,6 @@ const ClassPage = () => {
               <div key={index} className="bg-gray-100 shadow-md rounded-lg p-4">
                 <p className="font-bold">Name: {student.name}</p>
                 <p>ID: {student.id}</p>
-                <p>Class Standard: {student.standard}</p>
               </div>
             ))}
           </div>

@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { getSkills } from "../services/lesson";
+import { createLesson, getSkills } from "../services/lesson";
+import { getClassesByFellow } from "../services/class";
 
 
 const AddLessonForm = ({ onClose, onAddLesson }) => {
@@ -18,24 +19,39 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
   });
 
   const [skillOptions, setSkillsOptions] = useState([]);
+  const [classes, setClasses] = useState([]);
+
+  const asyncGetSkills  = async () => {
+    try {
+      const response = await getSkills();
+      console.log(response);
+      if (response.status === 200) {
+        setSkillsOptions(response.data.skills);
+      }
+    } catch (error) {
+      console.error("Failed to fetch skills:", error);
+    }
+  }
+
+  const asyncGetClasses = async () => {
+    try {
+      const response = await getClassesByFellow(localStorage.getItem("token"));
+      console.log(response);
+      if (response.status === 200) {
+        setClasses(response.data.classes);
+      }
+    } catch (error) {
+      console.error("Failed to fetch classes:", error);
+    }
+  }
 
   useEffect(() => {
-    console.log("Fetching skills...");
-    const asyncGetSkills  = async () => {
-      try {
-        const response = await getSkills();
-        console.log(response);
-        if (response.status === 200) {
-          setSkillsOptions(response.data.skills);
-        }
-      } catch (error) {
-        console.error("Failed to fetch skills:", error);
-      }
-    }
+    console.log("Fetching skills and classes...");
     asyncGetSkills();
+    asyncGetClasses()
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Reset errors
@@ -72,6 +88,25 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
       setErrors(newErrors);
       return;
     }
+
+    try {
+      const response = await createLesson(
+        localStorage.getItem("token"),
+        formData.name,
+        formData.grade,
+        formData.skills,
+      );
+      console.log("Lesson created:", response);
+
+      if (response.status === 200) {
+        alert("Lesson created successfully.");
+      }
+    } catch (error) {
+      console.error("Failed to create lesson:", error);
+      alert("Failed to create lesson. Please try again.");
+      return;
+    }
+
 
     const today = new Date();
     const formattedDate = `${today.getDate()} ${today.toLocaleString('default', { month: 'short' })}`;
@@ -125,9 +160,11 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
               className="w-full p-3 border rounded-lg bg-purple-100 focus:outline-none focus:border-purple-500"
             >
               <option value="">Choose Class</option>
-              <option value="3rd grade">3rd grade</option>
-              <option value="4th grade">4th grade</option>
-              <option value="5th grade">5th grade</option>
+              {
+                classes.map((c) => (
+                  <option key={c._id} value={c._id}>grade - {c.standard}</option>
+                ))
+              }
             </select>
             {errors.grade && (
               <p className="text-red-500 text-sm mt-1">{errors.grade}</p>
