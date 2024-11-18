@@ -44,6 +44,7 @@ export default function LoginPage() {
       const verifyDTO = await verifyOTP(email, otpString);
       console.log('OTP verified:', verifyDTO);
       if(verifyDTO.status === 200){
+        localStorage.setItem('token', verifyDTO.data.token);
         navigate('/dashboard');
       }
     } catch (error) {

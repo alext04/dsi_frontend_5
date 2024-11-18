@@ -27,7 +27,7 @@ export default function SignUpPage() {
     try {
       const fellowDTO = await addFellow(formData.name, formData.email, formData.phone);
       console.log('Fellow created:', fellowDTO);
-      setStep(2);
+      navigate('/login');
     } catch (error) {
       console.error('Failed to create fellow:', error);
     } finally {

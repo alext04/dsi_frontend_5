@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
+import { getSkills } from "../services/lesson";
 
 
 const AddLessonForm = ({ onClose, onAddLesson }) => {
@@ -16,15 +17,23 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
     skills: "",
   });
 
-  const skillOptions = [
-    "Confidence",
-    "Communication",
-    "Empathy",
-    "Leadership",
-    "Problem-solving",
-    "Self-discipline",
-    "Time management"
-  ];
+  const [skillOptions, setSkillsOptions] = useState([]);
+
+  useEffect(() => {
+    console.log("Fetching skills...");
+    const asyncGetSkills  = async () => {
+      try {
+        const response = await getSkills();
+        console.log(response);
+        if (response.status === 200) {
+          setSkillsOptions(response.data.skills);
+        }
+      } catch (error) {
+        console.error("Failed to fetch skills:", error);
+      }
+    }
+    asyncGetSkills();
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -128,8 +137,8 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
           <div className="space-y-2">
             <p className="font-medium">Select Skills:</p>
             <div className="space-y-2 bg-purple-100 p-3 rounded-lg border">
-              {skillOptions.map((skill) => (
-                <label key={skill} className="flex items-center space-x-2">
+              {Object.keys(skillOptions).map((skill) => (
+                <label key={skillOptions[skill]} className="flex items-center space-x-2" >
                   <input
                     type="checkbox"
                     checked={formData.skills.includes(skill)}
