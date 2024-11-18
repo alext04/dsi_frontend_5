@@ -15,7 +15,7 @@ function RootLayout() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 z-50">
       {/* Top Bar */}
       <header className="bg-white shadow-lg px-4 py-3 flex items-center justify-between z-50">
         {/* Left: Dropdown Button */}
@@ -41,7 +41,14 @@ function RootLayout() {
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 onClick={() => setIsDropdownOpen(false)}
               >
-                Lessons
+                View Lessons
+              </Link>
+              <Link
+                to="/addclass"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Add  Students
               </Link>
               <Link
                 to="/chat"
@@ -78,7 +85,7 @@ function RootLayout() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex">
+      <main className="flex-1  flex">
         <Outlet />
       </main>
 

@@ -13,6 +13,7 @@ import Chat from './pages/Chat';
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import LessonPlans from "./pages/Lesson";
+import ClassPage from "./pages/Class";
 
 
 const router = createBrowserRouter([
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "lessons",
         element: <LessonPlans />,
+      },
+      {
+        path: "addclass",
+        element: <ClassPage />,
       },
     ],
   },
