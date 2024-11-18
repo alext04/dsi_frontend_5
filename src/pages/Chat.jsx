@@ -31,20 +31,27 @@ function Chat() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="h-screen w-screen flex flex-col bg-gray-50">
+      {/* Header with Lesson Details */}
       {lesson && (
-        <div className="mb-4 bg-purple-100 p-4 rounded-lg shadow">
-          <h2 className="text-lg font-bold">{lesson.grade}</h2>
-          <p className="text-sm text-gray-700">
-            <strong>Date:</strong> {lesson.date}
-          </p>
-          <p className="text-sm text-gray-700">
-            <strong>Topics:</strong> {lesson.topics}
-          </p>
+        <div className="bg-purple-600 text-white py-4 px-8 flex justify-between items-center shadow-md">
+          <div>
+            <h1 className="text-2xl font-bold">{lesson.grade}</h1>
+            <p className="text-sm">
+              <strong>Date:</strong> {lesson.date}
+            </p>
+            <p className="text-sm">
+              <strong>Topics:</strong> {lesson.topics}
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="bg-white shadow rounded-lg p-6 h-[500px] overflow-y-auto">
+      {/* Chat Messages Section */}
+      <div
+        className="flex-1 overflow-y-auto bg-white p-8"
+        style={{ marginBottom: "70px" }} // Account for bottom navbar height
+      >
         {messages.map((message, index) => (
           <div
             key={index}
@@ -53,9 +60,9 @@ function Chat() {
             }`}
           >
             <div
-              className={`p-3 rounded-lg ${
+              className={`p-4 rounded-lg ${
                 message.type === "user"
-                  ? "bg-pink-500 text-white"
+                  ? "bg-purple-500 text-white"
                   : "bg-gray-200 text-gray-800"
               }`}
               style={{ maxWidth: "70%" }}
@@ -66,7 +73,8 @@ function Chat() {
         ))}
       </div>
 
-      <div className="mt-4 flex items-center">
+      {/* Input Section */}
+      <div className="fixed bottom-[70px] left-0 w-full bg-gray-100 border-t border-gray-200 p-4 flex">
         <input
           type="text"
           value={userInput}
@@ -76,14 +84,68 @@ function Chat() {
         />
         <button
           onClick={handleSendMessage}
-          className="ml-4 bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition"
+          className="ml-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
         >
           Send
         </button>
       </div>
+
+      {/* Bottom Navbar Placeholder */}
+      <nav className="fixed bottom-0 left-0 w-full bg-white shadow-lg h-[70px] flex items-center justify-around">
+        <button className="text-gray-500 hover:text-purple-600 flex flex-col items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 10h18M9 21V3M15 21V3"
+            />
+          </svg>
+          <span className="text-sm">Home</span>
+        </button>
+        <button className="text-gray-500 hover:text-purple-600 flex flex-col items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.707 9.707 0 01-4-.812l-4.243 1.061a1 1 0 01-1.235-1.235l1.06-4.243A9.707 9.707 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+          <span className="text-sm">Chat</span>
+        </button>
+        <button className="text-gray-500 hover:text-purple-600 flex flex-col items-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5.121 17.804A13.937 13.937 0 0112 15c2.387 0 4.627.563 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm-8 10a8 8 0 1116 0H7z"
+            />
+          </svg>
+          <span className="text-sm">Profile</span>
+        </button>
+      </nav>
     </div>
   );
 }
 
 export default Chat;
-
