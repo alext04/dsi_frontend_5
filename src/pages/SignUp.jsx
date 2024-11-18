@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { Phone, User, Mail } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+// src/pages/SignUp.jsx
+import React, { useState, useRef, useEffect } from 'react';
+import { Phone, User, Mail, Lock } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { addFellow } from '../services/login';
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -22,11 +24,62 @@ export default function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    try {
+      const fellowDTO = await addFellow(formData.name, formData.email, formData.phone);
+      console.log('Fellow created:', fellowDTO);
+      setStep(2);
+    } catch (error) {
+      console.error('Failed to create fellow:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    // Simulating submission process
+  const handleOtpChange = (index, value) => {
+    if (value && !/^\d+$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    if (!/^\d+$/.test(pastedData)) return;
+
+    const newOtp = [...otp];
+    pastedData.split('').forEach((char, index) => {
+      if (index < 6) newOtp[index] = char;
+    });
+    setOtp(newOtp);
+
+    const nextEmptyIndex = newOtp.findIndex(val => !val);
+    if (nextEmptyIndex === -1) {
+      inputRefs.current[5]?.focus();
+    } else {
+      inputRefs.current[nextEmptyIndex]?.focus();
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Add your OTP verification logic here
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/login");
+      navigate('/dashboard');
     }, 1000);
   };
 

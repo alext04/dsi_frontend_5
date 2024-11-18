@@ -25,6 +25,11 @@ export default function LoginPage() {
       console.log('OTP requested:', otpDTO);
       setShowOTP(true);
     } catch (error) {
+      if (error.status === 403) {
+        alert('Fellow not found with this email.');
+        navigate('/signup');
+        return
+      }
       console.error('Failed to request OTP:', error);
     } finally {
       setIsLoading(false);
