@@ -9,9 +9,9 @@ const Dashboard = () => {
       <nav className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="w-full px-8 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-serif italic">Welcome to tafea!</h1>
+            <h1 className="text-4xl font-serif italic items-center justify-center">Welcome to tafea!</h1>
             <div className="flex items-center space-x-12">
-              <button className="text-gray-600 hover:text-gray-900">
+              {/* <button className="text-gray-600 hover:text-gray-900">
                 Home
               </button>
               <button className="text-gray-600 hover:text-gray-900">
@@ -22,8 +22,8 @@ const Dashboard = () => {
               </button>
               <button className="text-gray-600 hover:text-gray-900">
                 Favorites
-              </button>
-              <div className="w-10 h-10 rounded-full bg-gray-200" />
+              </button> */}
+              {/* <div className="w-10 h-10 rounded-full bg-gray-200" /> */}
             </div>
           </div>
         </div>
