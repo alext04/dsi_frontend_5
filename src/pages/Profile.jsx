@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   UserCircle,
   Mail,
@@ -10,18 +10,36 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getFellowProfile } from "../services/fellow";
 
 export default function Profile() {
+  const [fellowInfo, setFellowInfo] = useState({
+      name: "Sarah Johnson",
+      role: "Teaching Fellow",
+      email: "sarah.j@tafea.edu",
+      phone: "+1 (555) 123-4567",
+      subject: "Mathematics",
+      experience: "5 years",
+      availabilityStatus: "Available",
+  });
+
   const navigate = useNavigate();
-  const fellowInfo = {
-    name: "Sarah Johnson",
-    role: "Teaching Fellow",
-    email: "sarah.j@tafea.edu",
-    phone: "+1 (555) 123-4567",
-    subject: "Mathematics",
-    experience: "5 years",
-    availabilityStatus: "Available",
-  };
+
+  useEffect(() => {
+    // Fetch fellow profile data
+    const asyncGetFellowProfile = async () => {
+      try {
+        const res = await getFellowProfile(localStorage.getItem("token"));
+        console.log("Fellow profile data:", res.data);
+        if (res.status === 200) {
+          setFellowInfo(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching fellow profile:", error.message);
+      }
+    }
+    asyncGetFellowProfile();
+  }, []);
 
   const statsInfo = {
     activities: {
@@ -39,15 +57,12 @@ export default function Profile() {
             {/* Avatar and Basic Info */}
             <div className="flex flex-col items-center md:items-start">
               <div className="w-32 h-32 bg-[#A393EB] rounded-full flex items-center justify-center text-white text-4xl font-semibold mb-4">
-                {fellowInfo.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {fellowInfo.name}
               </div>
               <h1 className="text-2xl font-bold text-gray-800">
                 {fellowInfo.name}
               </h1>
-              <p className="text-[#A393EB] font-medium">{fellowInfo.role}</p>
+              <p className="text-[#A393EB] font-medium">Teaching Fellow</p>
             </div>
 
             {/* Contact Information */}
@@ -58,11 +73,7 @@ export default function Profile() {
               </div>
               <div className="flex items-center gap-3 text-gray-600">
                 <Phone className="w-5 h-5 text-[#A393EB]" />
-                <span>{fellowInfo.phone}</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-600">
-                <Book className="w-5 h-5 text-[#A393EB]" />
-                <span>Subject: {fellowInfo.subject}</span>
+                <span>{fellowInfo.mobile}</span>
               </div>
               <div className="flex items-center gap-3 text-gray-600">
                 <Clock className="w-5 h-5 text-[#A393EB]" />

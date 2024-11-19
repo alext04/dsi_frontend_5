@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { getSuggestedActivities } from "../services/chat";
+import { updateSelectedActivity, updateSuggestedActivities } from "../services/lesson";
 
 function Chat() {
   const location = useLocation();
@@ -7,6 +9,76 @@ function Chat() {
 
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
+
+  const formatDate = (isoDate) => {
+    // Create a Date object
+    const date = new Date(isoDate);
+
+    // Format the date
+    const day = date.getUTCDate(); // Get the day
+    const month = date.toLocaleString('en-US', { month: 'short' }); // Get the short month (e.g., Nov)
+
+    // Combine into desired format
+    const formattedDate = `${day} ${month}`;
+
+    return formattedDate;
+  }
+
+  const asyncupdateSuggestedActivities = async (activities) => {
+    try{
+      const res = await updateSuggestedActivities(lesson._id, activities);
+      console.log("Updated suggested activities:", res.data);
+      return res.data.activities
+    } catch (error) {
+      console.error("Error updating suggested activities:", error);
+      return []
+    }
+  }
+
+  const handleSelectedActivity = async (activityId, activityName) => {
+    try {
+      console.log("Selected activity:", activityId, lesson._id);
+      const res = await updateSelectedActivity(lesson._id, activityId);
+      console.log("Selected activity:", res.data);
+      if (res.status === 200) {
+        setMessages([
+          ...messages,
+          { type: "user", button: false, text: `I have selected Activity - ${activityName}` },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error selecting activity:", error);
+    }
+  }
+
+  useEffect(() => {
+    const asyncGetSuggestedActivities = async () => {
+      try {
+        const res = await getSuggestedActivities(localStorage.getItem("token"), lesson);
+        console.log("Suggested activities:", res.data);
+        if (res.status === 200) {
+          const activityIds = await asyncupdateSuggestedActivities(res.data.activities);
+          console.log("Activity IDs:", activityIds);
+          setMessages([
+            ...messages,
+            { type: "bot", button: false,  text: "Here are some suggested activities:" },
+            ...res.data?.activities?.map((activity, index) => ({
+              type: "bot",
+              button: true,
+              activityId: activityIds[index],
+              activityName: activity.activity_name,
+              text: `Activity name: ${activity.activity_name}\nDescription: ${activity.description}\nProcedure: ${activity.procedure}`,
+            })),
+          ]);
+        }
+      } catch (error) {
+        console.error("Error fetching suggested activities:", error.message);
+      }
+    };
+    if (lesson) {
+      asyncGetSuggestedActivities();
+    }
+  }, [lesson]);
 
   const handleSendMessage = () => {
     if (userInput.trim() === "") return;
@@ -36,12 +108,12 @@ function Chat() {
       {lesson && (
         <div className="bg-purple-600 text-white py-4 px-8 flex justify-between items-center shadow-md">
           <div>
-            <h1 className="text-2xl font-bold">{lesson.grade}</h1>
+            <h1 className="text-2xl font-bold">{lesson.lesson_name}</h1>
             <p className="text-sm">
-              <strong>Date:</strong> {lesson.date}
+              <strong>Date:</strong> {formatDate(lesson.createdAt)}
             </p>
             <p className="text-sm">
-              <strong>Topics:</strong> {lesson.topics}
+              <strong>Topics:</strong> {lesson?.skills?.join(" , ")}
             </p>
           </div>
         </div>
@@ -59,16 +131,31 @@ function Chat() {
               message.type === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            <div
-              className={`p-4 rounded-lg ${
-                message.type === "user"
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-              style={{ maxWidth: "70%" }}
-            >
-              {message.text}
-            </div>
+          {
+            message.button 
+            ? <div
+                className={`p-4 rounded-lg ${
+                  message.type === "user"
+                    ? "bg-purple-500 text-white"
+                    : "bg-gray-200 text-gray-800"
+                } cursor-pointer`}
+                style={{ maxWidth: "70%" }}
+                onClick={() => handleSelectedActivity(message.activityId, message.activityName)}
+              >
+                {message.text}
+              </div>
+            :<div
+                className={`p-4 rounded-lg ${
+                  message.type === "user"
+                    ? "bg-purple-500 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+                style={{ maxWidth: "70%" }}
+              >
+                {message.text}
+              </div>
+            }
+            
           </div>
         ))}
       </div>
@@ -76,6 +163,7 @@ function Chat() {
       {/* Input Section */}
       <div className="fixed bottom-[70px] left-0 w-full bg-gray-100 border-t border-gray-200 p-4 flex">
         <input
+          disabled={lesson !== null}
           type="text"
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
@@ -83,7 +171,12 @@ function Chat() {
           className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
         <button
-          onClick={handleSendMessage}
+          disabled={lesson !== null}
+          onClick={() => {
+            if(lesson === null) {
+              handleSendMessage
+            }
+          }}
           className="ml-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
         >
           Send

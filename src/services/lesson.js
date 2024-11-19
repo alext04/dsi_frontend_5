@@ -17,8 +17,24 @@ const getLessonPlans = async (token) => {
     return await apiClient.get(`/lessons/getLessonPlans?token=${token}`);
 }
 
+const updateSuggestedActivities = async (lessonId, activities) => {
+    return await apiClient.post('/lessons/addSuggestedActivities', {
+        lessonId,
+        activities
+    });
+}
+
+const updateSelectedActivity = async ( lessonId, activityId) => {
+    return await apiClient.post('/lessons/updateSelectedActivity', {
+        lessonId,
+        activityId
+    });
+}
+
 export {
     getSkills,
     createLesson,
-    getLessonPlans
+    getLessonPlans,
+    updateSuggestedActivities,
+    updateSelectedActivity
 }
