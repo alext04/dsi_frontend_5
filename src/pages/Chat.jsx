@@ -149,7 +149,7 @@ function Chat() {
                   message.type === "user"
                     ? "bg-purple-500 text-white"
                     : "bg-gray-200 text-gray-800"
-                }`}
+                } mb-[50px]`}
                 style={{ maxWidth: "70%" }}
               >
                 {message.text}
