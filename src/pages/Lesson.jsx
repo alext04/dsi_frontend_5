@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { createLesson, getSkills } from "../services/lesson";
+import { createLesson, getSkills, getLessonPlans } from "../services/lesson";
 import { getClassesByFellow } from "../services/class";
 
 
@@ -100,24 +100,13 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
 
       if (response.status === 200) {
         alert("Lesson created successfully.");
+        onAddLesson(response.data.lesson);
       }
     } catch (error) {
       console.error("Failed to create lesson:", error);
       alert("Failed to create lesson. Please try again.");
       return;
     }
-
-
-    const today = new Date();
-    const formattedDate = `${today.getDate()} ${today.toLocaleString('default', { month: 'short' })}`;
-    
-    const newLesson = {
-      grade: formData.grade,
-      date: formattedDate,
-      topics: formData.skills.join(", "),
-    };
-    
-    onAddLesson(newLesson);
     onClose();
   };
 
@@ -311,26 +300,49 @@ const LessonPlans = () => {
     },
   ]);
 
+  const getAllLessonPlans = async  () => {
+    try {
+      const response = await getLessonPlans(localStorage.getItem("token"));
+      console.log(response.data.lessonPlans);
+      if (response.status === 200) {
+        setLessons(response.data.lessonPlans);
+      }
+    }
+    catch (error) {
+      console.error("Failed to fetch lessons:", error);
+    }
+  }
+
+  useEffect(() => {
+    console.log("Fetching lesson plans...");
+    getAllLessonPlans();
+
+  }, [])
+
+  const formatDate = (isoDate) => {
+    // Create a Date object
+    const date = new Date(isoDate);
+
+    // Format the date
+    const day = date.getUTCDate(); // Get the day
+    const month = date.toLocaleString('en-US', { month: 'short' }); // Get the short month (e.g., Nov)
+
+    // Combine into desired format
+    const formattedDate = `${day} ${month}`;
+
+    return formattedDate;
+  }
+
   const completedLessons = [
     {
-      grade: "4th grade",
-      date: "10 Oct",
+      grade: "lesson-completed-5",
+      date: "17 Nov",
       topics: "Critical thinking, problem solving",
     },
     {
-      grade: "3rd grade",
-      date: "15 Oct",
+      grade: "lesson-completed-6",
+      date: "17 Nov",
       topics: "Communication skills, active listening",
-    },
-    {
-      grade: "5th grade",
-      date: "1 Nov",
-      topics: "Conflict resolution, teamwork",
-    },
-    {
-      grade: "4th grade",
-      date: "5 Nov",
-      topics: "Decision making, responsibility",
     },
   ];
 
@@ -387,16 +399,16 @@ const LessonPlans = () => {
                 </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {lessons.map((lesson, index) => (
+                {lessons?.map((lesson, index) => (
                   <div
                     key={index}
                     className="bg-pink-100 p-4 rounded-lg shadow-lg flex flex-col justify-between"
                   >
                     <div>
                       <h3 className="text-lg font-semibold mb-2">
-                        {lesson.grade}: {lesson.date}
+                        {lesson.lesson_name}: {formatDate(lesson.createdAt)}
                       </h3>
-                      <p className="text-gray-700 text-sm">{lesson.topics}</p>
+                      <p className="text-gray-700 text-sm">{lesson?.skills?.join(' , ')}</p>
                     </div>
                     <button
                       onClick={() => handleStartLesson(lesson)}

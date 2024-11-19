@@ -13,7 +13,12 @@ const createLesson = async (token, lessonName, classId, skills) => {
     });
 }
 
+const getLessonPlans = async (token) => {
+    return await apiClient.get(`/lessons/getLessonPlans?token=${token}`);
+}
+
 export {
     getSkills,
-    createLesson
+    createLesson,
+    getLessonPlans
 }
