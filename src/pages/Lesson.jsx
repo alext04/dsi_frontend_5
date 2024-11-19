@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
-import { createLesson, getSkills, getLessonPlans } from "../services/lesson";
+import { createLesson, getSkills, getLessonPlans, updateLessonProgress } from "../services/lesson";
 import { getClassesByFellow } from "../services/class";
+import Switch from '@mui/material/Switch';
 
 
 const AddLessonForm = ({ onClose, onAddLesson }) => {
@@ -204,6 +205,20 @@ const AddLessonForm = ({ onClose, onAddLesson }) => {
 };
 
 const ActivityDetails = ({ lesson, onClose }) => {
+  const formatDate = (isoDate) => {
+    // Create a Date object
+    const date = new Date(isoDate);
+
+    // Format the date
+    const day = date.getUTCDate(); // Get the day
+    const month = date.toLocaleString('en-US', { month: 'short' }); // Get the short month (e.g., Nov)
+
+    // Combine into desired format
+    const formattedDate = `${day} ${month}`;
+
+    return formattedDate;
+  }
+
   return (
     <div 
       className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4"
@@ -213,7 +228,7 @@ const ActivityDetails = ({ lesson, onClose }) => {
     >
       <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{lesson.grade} Activity</h2>
+          <h2 className="text-2xl font-bold">{lesson.lesson_name} Activity</h2>
           <button 
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
@@ -225,18 +240,18 @@ const ActivityDetails = ({ lesson, onClose }) => {
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold text-lg">Date</h3>
-            <p>{lesson.date}</p>
+            <p>{formatDate(lesson.createdAt)}</p>
           </div>
           
           <div>
             <h3 className="font-semibold text-lg">Topics Covered</h3>
-            <p>{lesson.topics}</p>
+            <p>{lesson.skills.join(' , ')}</p>
           </div>
           
           <div>
             <h3 className="font-semibold text-lg">Activity Details</h3>
             <p className="text-gray-700">
-              Students participated in interactive sessions focusing on {lesson.topics.toLowerCase()}. 
+              Students participated in interactive sessions focusing on {lesson.skills.join(' , ').toLowerCase()}. 
               The activities included group discussions, role-playing exercises, and practical 
               demonstrations to reinforce learning objectives.
             </p>
@@ -277,34 +292,183 @@ const ActivityDetails = ({ lesson, onClose }) => {
     </div>
   );
 };
+
+const FeedbackModal = ({ lesson, onClose }) => {
+  const [feedback, setFeedback] = useState({
+    publicSpeaking: 50,
+    leadership: 50,
+    difficulty: 50,
+    recommendation: 50
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // Here you can add the API call to submit feedback
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulating API call
+      console.log("Feedback submitted:", feedback);
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit feedback:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div 
+      className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[85vh] overflow-y-auto my-8">
+        <div className="flex justify-between items-center mb-6 sticky top-0 bg-white pt-2">
+          <h2 className="text-2xl font-bold">Lesson Feedback</h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-8">
+          <div>
+            <h3 className="text-lg font-semibold mb-4 bg-purple-200 p-4 rounded-lg">
+              How did the activity go?
+            </h3>
+            <div className="space-y-6">
+              {lesson.skills.map((topic) => (
+                <div key={topic} className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {topic}
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={feedback[topic.toLowerCase().replace(' ', '')]}
+                    onChange={(e) => setFeedback({
+                      ...feedback,
+                      [topic.toLowerCase().replace(' ', '')]: e.target.value
+                    })}
+                    className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-semibold mb-4 bg-purple-200 p-4 rounded-lg">
+              Rate student Performance
+            </h3>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Difficulty Level
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={feedback.difficulty}
+                  onChange={(e) => setFeedback({
+                    ...feedback,
+                    difficulty: e.target.value
+                  })}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                />
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Too Easy</span>
+                  <span>Too Difficult</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Would you recommend this activity?
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={feedback.recommendation}
+                  onChange={(e) => setFeedback({
+                    ...feedback,
+                    recommendation: e.target.value
+                  })}
+                  className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                />
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Don't Recommend</span>
+                  <span>Highly Recommend</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-end sticky bottom-0 bg-white pb-2">
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 disabled:bg-purple-300 flex items-center space-x-2"
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Submitting...</span>
+              </>
+            ) : (
+              <span>Submit Feedback</span>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const LessonPlans = () => {
   const [activeTab, setActiveTab] = useState("planned");
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [lessons, setLessons] = useState([
-    {
-      grade: "3rd grade",
-      date: "17 Nov",
-      topics: "Public speaking, confidence, leadership",
-    },
-    {
-      grade: "5th grade",
-      date: "20 Nov",
-      topics: "Team building, leadership",
-    },
-    {
-      grade: "5th grade",
-      date: "21 Nov",
-      topics: "Empathy, sympathy",
-    },
-  ]);
+  const [lessons, setLessons] = useState([]);
+  const [completedLessons, setCompletedLessons] = useState([]);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+
+  const handleProgressUpdate = async (lessonId, progress) => {
+    try {
+      const response = await updateLessonProgress(lessonId, progress);
+      console.log(response);
+      if (response.status === 200) {
+        const updatedLessons = lessons.map((lesson) => {
+          if (lesson._id === lessonId) {
+            return response.data.lesson;
+          }
+          return lesson;
+        });
+        setLessons(updatedLessons.filter(lesson => !lesson.progress));
+        setCompletedLessons(updatedLessons.filter(lesson => lesson.progress));
+      }
+    } catch (error) {
+      console.error("Failed to update lesson progress:", error);
+    }
+  };
 
   const getAllLessonPlans = async  () => {
     try {
       const response = await getLessonPlans(localStorage.getItem("token"));
       console.log(response.data.lessonPlans);
       if (response.status === 200) {
-        setLessons(response.data.lessonPlans);
+        setLessons(response.data.lessonPlans.filter(lesson => !lesson.progress));
+        setCompletedLessons(response.data.lessonPlans.filter(lesson => lesson.progress));
       }
     }
     catch (error) {
@@ -331,19 +495,6 @@ const LessonPlans = () => {
 
     return formattedDate;
   }
-
-  const completedLessons = [
-    {
-      grade: "lesson-completed-5",
-      date: "17 Nov",
-      topics: "Critical thinking, problem solving",
-    },
-    {
-      grade: "lesson-completed-6",
-      date: "17 Nov",
-      topics: "Communication skills, active listening",
-    },
-  ];
 
   const navigate = useNavigate();
 
@@ -403,10 +554,17 @@ const LessonPlans = () => {
                     key={index}
                     className="bg-pink-100 p-4 rounded-lg shadow-lg flex flex-col justify-between"
                   >
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">
-                        {lesson.lesson_name}: {formatDate(lesson.createdAt)}
-                      </h3>
+                    <div className="">
+                      <div className="flex justify-between">
+                        <h3 className="text-lg font-semibold mb-2">
+                          {lesson.lesson_name}: {formatDate(lesson.createdAt)}
+                        </h3>
+                        <Switch
+                          checked={lesson?.progress}
+                          onChange={() => handleProgressUpdate(lesson._id, !lesson.progress)}
+                          inputProps={{ 'aria-label': 'controlled' }}
+                        />
+                      </div>
                       <p className="text-gray-700 text-sm">{lesson?.skills?.join(' , ')}</p>
                     </div>
                     <button
@@ -428,23 +586,38 @@ const LessonPlans = () => {
                   key={index}
                   className="bg-pink-100 p-8 rounded-lg shadow-lg flex flex-col justify-between"
                 >
-                  <div>
+                  <div >
                     <h3 className="text-lg font-semibold mb-2">
-                      {lesson.grade}: {lesson.date}
+                    {lesson.lesson_name}: {formatDate(lesson.createdAt)}
                     </h3>
-                    <p className="text-gray-700 text-sm">{lesson.topics}</p>
+                    <p className="text-gray-700 text-sm">{lesson.skills.join(' , ')}</p>
                   </div>
-                  <button
-                    onClick={() => setSelectedActivity(lesson)}
-                    className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md"
-                  >
-                    View Activity
-                  </button>
+                  
+                  <div className="flex flex-col ">
+                <button
+                  onClick={() => setSelectedActivity(lesson)}
+                  className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md"
+                >
+                  View Activity
+                </button>
+                <button
+                  onClick={() => setSelectedFeedback(lesson)}
+                  className="mt-4 px-4 py-2 text-white bg-pink-500 hover:bg-pink-600 rounded-md"
+                >
+                  Submit Feedback
+                </button>
+              </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+        {selectedFeedback && (
+          <FeedbackModal
+            lesson={selectedFeedback}
+            onClose={() => setSelectedFeedback(null)}
+          />
+        )}
 
         {/* Activity Details Modal */}
         {selectedActivity && (

@@ -31,10 +31,18 @@ const updateSelectedActivity = async ( lessonId, activityId) => {
     });
 }
 
+const updateLessonProgress = async (lessonId, progress) => {
+    return await apiClient.post('/lessons/updateLessonProgress', {
+        lessonId,
+        progress
+    });
+}
+
 export {
     getSkills,
     createLesson,
     getLessonPlans,
     updateSuggestedActivities,
-    updateSelectedActivity
+    updateSelectedActivity,
+    updateLessonProgress
 }
